@@ -1,0 +1,6 @@
+__pycache__/*
+classification/__pycache__/*
+classification/models/*
+classification/onnxConversion/models
+object_detection/Yolov3/onnxConversion/models/*
+
