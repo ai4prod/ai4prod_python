@@ -10,7 +10,8 @@ from torch.utils.data import DataLoader, random_split
 from torchvision.datasets import CIFAR10
 import torch.nn.functional as F
 from argparse import ArgumentParser
-from models import *
+from models_lighting import *
+from datamodule_lighting import *
 
 
         
@@ -38,10 +39,13 @@ if __name__ == "__main__":
     mode='min',
     )
     
+
     # Training
-    model = ImagenetTransferLearning(num_classes=10)
-    trainer = pl.Trainer(max_epochs=1, gpus=1, progress_bar_refresh_rate=20, callbacks=[checkpoint_callback])
-    trainer.fit(model)
+    dm= ImageFolderTransferLearning("data")
+    model = ImagenetTransferLearning(num_classes=2)
+    
+    trainer = pl.Trainer(max_epochs=10, gpus=1, progress_bar_refresh_rate=20, callbacks=[checkpoint_callback])
+    trainer.fit(model=model,datamodule=dm)
     torch.save(model.state_dict(), 'finetune.pth')
     
     # load model

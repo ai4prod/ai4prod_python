@@ -9,6 +9,7 @@ import torchvision
 from torchvision import transforms,models
 from torch.utils.data import DataLoader, random_split
 from torchvision.datasets import CIFAR10
+import torch.nn.functional as F
 
 
 
@@ -20,10 +21,7 @@ class ImagenetTransferLearning(pl.LightningModule):
 
     def __init__(self, num_classes):
         super().__init__()
-        self. transform = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
-        ])
+        
         self.num_classes = num_classes
         # init pretrained
         backbone = torchvision.models.resnet50(pretrained=True)
@@ -69,20 +67,23 @@ class ImagenetTransferLearning(pl.LightningModule):
         self.log('val_loss', avg_val_loss)
         self.log('val_accuracy', avg_acc)
     
-    def train_dataloader(self):
-        trainloader = torch.utils.data.DataLoader(CIFAR10(root='./data', train=True,
-                                        download=True, transform=self.transform), 
-                                        batch_size=8,
-                                        shuffle=True, num_workers=4)
-        return trainloader
+    # def train_dataloader(self):
+    #     trainloader = torch.utils.data.DataLoader(CIFAR10(root='./data', train=True,
+    #                                     download=True, transform=self.transform), 
+    #                                     batch_size=8,
+    #                                     shuffle=True, num_workers=4)
+    #     return trainloader
     
-    def val_dataloader(self):
-        testloader = torch.utils.data.DataLoader(CIFAR10(root='./data', train=False,
-                                       download=True, transform=self.transform), 
-                                       batch_size=8,
-                                       shuffle=False, num_workers=4)
-        return testloader
-    
+    # def val_dataloader(self):
+    #     testloader = torch.utils.data.DataLoader(CIFAR10(root='./data', train=False,
+    #                                    download=True, transform=self.transform), 
+    #                                    batch_size=8,
+    #                                    shuffle=False, num_workers=4)
+    #     return testloader
+
+
+
+
 #class to train Imagenet Dataset
 
 class ImagenetInference(pl.LightningModule):
