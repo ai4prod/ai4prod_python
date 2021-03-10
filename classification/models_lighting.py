@@ -21,7 +21,8 @@ class ImagenetTransferLearning(pl.LightningModule):
 
     def __init__(self, num_classes):
         super().__init__()
-        
+        # save init parameters in a dictionary. Use by load_from_checkpoint
+        self.save_hyperparameters()
         self.num_classes = num_classes
         # init pretrained
         backbone = torchvision.models.resnet50(pretrained=True)
@@ -29,6 +30,8 @@ class ImagenetTransferLearning(pl.LightningModule):
         layers = list(backbone.children())[:-1]
         self.feature_extractor = torch.nn.Sequential(*layers)
         self.finetunelayer = torch.nn.Linear(num_param, self.num_classes)
+        
+         
         
         
     def forward(self, x):
