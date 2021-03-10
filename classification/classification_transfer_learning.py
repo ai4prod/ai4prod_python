@@ -39,9 +39,12 @@ if __name__ == "__main__":
     mode='min',
     )
     
+    #
+    normalize_data=[0.485,0.456,0.406,0.229,0.224,0.225]
 
     # Training
-    dm= ImageFolderTransferLearning("data")
+    dm= ImageFolderTransferLearning("data",img_w=224,img_h=224,normValue=normalize_data,batch_size=8)
+    #
     model = ImagenetTransferLearning(num_classes=2)
     
     trainer = pl.Trainer(max_epochs=10, gpus=1, progress_bar_refresh_rate=20, callbacks=[checkpoint_callback])

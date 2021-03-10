@@ -6,7 +6,7 @@ import onnx
 
 from models_lighting import *
 
-
+#ATTENTION Change this value based on your training
 image_channel_in= 3 #RGB
 image_size_w=224
 image_size_h=224

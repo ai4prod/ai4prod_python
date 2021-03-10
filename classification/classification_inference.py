@@ -3,7 +3,10 @@ import torch
 from datamodule_lighting import *
 from models_lighting import *
 
-testDataLoader= ImageFolderTransferLearningTest("data")
+
+normalize_data=[0.485,0.456,0.406,0.229,0.224,0.225]
+
+testDataLoader= ImageFolderTransferLearningTest("data",img_w=224,img_h=224,normValue=normalize_data,batch_size=1)
 
 testDataLoader.setup()
 
@@ -17,9 +20,11 @@ model.cuda()
 for data in DataLoader:
     tensor,label=data
     tensor = tensor.cuda()
-    
+    print(label)
+    #model forward is without softmax
     out= model(tensor)
-
+    print(out)
+    
     
 
 

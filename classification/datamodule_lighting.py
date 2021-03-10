@@ -7,23 +7,24 @@ from torchvision import transforms,datasets
 from torch.utils.data import random_split, DataLoader 
 
 #Data Module for transfer learning from Imagenet
-
+#Images need to be in RGB order for this normalize value
 class ImageFolderTransferLearning(pl.LightningDataModule):
-    def __init__(self,datasetPath):
+    def __init__(self,datasetPath, img_w,img_h,normValue,batch_size):
         super().__init__()
         self.train_transform= transforms.Compose([
-        transforms.Resize([224,224]),
+        transforms.Resize([img_w,img_h]),
         transforms.ToTensor(),
-        transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
+        transforms.Normalize((normValue[0], normValue[1], normValue[2]), (normValue[3], normValue[4], normValue[5]))
         ])
 
         self.test_transform= transforms.Compose([
-        transforms.Resize((224,224)),
+        transforms.Resize([img_w,img_h]),
         transforms.ToTensor(),
-        transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
+        transforms.Normalize((normValue[0], normValue[1], normValue[2]), (normValue[3], normValue[4], normValue[5]))
         ])
 
         self.datasetPath=datasetPath
+        self.batch_size=batch_size
 
     def setup(self,stage=None):
         
@@ -32,20 +33,23 @@ class ImageFolderTransferLearning(pl.LightningDataModule):
     
     def train_dataloader(self):
 
-        return DataLoader(self.trainDataset,batch_size=8,shuffle=True)
+        return DataLoader(self.trainDataset,batch_size=self.batch_size,shuffle=True)
     
     def val_dataloader(self):
-        return DataLoader(self.valDataset,batch_size=8,shuffle=True)
+        return DataLoader(self.valDataset,batch_size=self.batch_size,shuffle=True)
 
+# DataModule for testing ImageFolderTransferLearning
+# here we load only test set
 class ImageFolderTransferLearningTest(pl.LightningDataModule):
-    def __init__(self,datasetPath):
+    def __init__(self,datasetPath, img_w,img_h,normValue,batch_size):
         super().__init__()
         self.test_transforms= transforms.Compose([
-        transforms.Resize([224,224]),
+        transforms.Resize([img_w,img_h]),
         transforms.ToTensor(),
-        transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
+        transforms.Normalize((normValue[0], normValue[1], normValue[2]), (normValue[3], normValue[4], normValue[5]))
         ])
         self.datasetPath=datasetPath
+        self.batch_size=batch_size
     
     def setup(self,stage=None):
         
@@ -53,7 +57,7 @@ class ImageFolderTransferLearningTest(pl.LightningDataModule):
     
     def test_dataloader(self):
 
-        return DataLoader(self.testDataset,batch_size=1,shuffle=True)
+        return DataLoader(self.testDataset,batch_size=self.batch_size,shuffle=True)
        
 
         
