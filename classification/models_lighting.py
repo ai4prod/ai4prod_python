@@ -1,4 +1,4 @@
-#File for model class
+#File for model class of pytorch lightingModule
 import pytorch_lightning as pl
 from pytorch_lightning import callbacks
 from pytorch_lightning.metrics.functional import accuracy
@@ -70,19 +70,7 @@ class ImagenetTransferLearning(pl.LightningModule):
         self.log('val_loss', avg_val_loss)
         self.log('val_accuracy', avg_acc)
     
-    # def train_dataloader(self):
-    #     trainloader = torch.utils.data.DataLoader(CIFAR10(root='./data', train=True,
-    #                                     download=True, transform=self.transform), 
-    #                                     batch_size=8,
-    #                                     shuffle=True, num_workers=4)
-    #     return trainloader
-    
-    # def val_dataloader(self):
-    #     testloader = torch.utils.data.DataLoader(CIFAR10(root='./data', train=False,
-    #                                    download=True, transform=self.transform), 
-    #                                    batch_size=8,
-    #                                    shuffle=False, num_workers=4)
-    #     return testloader
+  
 
 
 

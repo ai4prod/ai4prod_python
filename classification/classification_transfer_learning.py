@@ -39,20 +39,16 @@ if __name__ == "__main__":
     mode='min',
     )
     
-    #
+    #NEED TO CHANGE WITH YOUR VALUE
     normalize_data=[0.485,0.456,0.406,0.229,0.224,0.225]
 
     # Training
+    #Img_w Img_h batch_size NEED TO CHANGE WITH CUSTOM VALUE
     dm= ImageFolderTransferLearning("data",img_w=224,img_h=224,normValue=normalize_data,batch_size=8)
-    #
+    
+    #NUM_CLASSES NEED TO CHANGE WITH CUSTOM VALUE
     model = ImagenetTransferLearning(num_classes=2)
     
     trainer = pl.Trainer(max_epochs=10, gpus=1, progress_bar_refresh_rate=20, callbacks=[checkpoint_callback])
     trainer.fit(model=model,datamodule=dm)
-    torch.save(model.state_dict(), 'finetune.pth')
-    
-    # load model
-    
-
-    print("----Conversion Completed----")
     
