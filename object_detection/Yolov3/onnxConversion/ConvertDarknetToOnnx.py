@@ -6,8 +6,12 @@ from utils.datasets import *
 from utils.utils import *
 
 
+IMAGE_HEIGHT_ONNX= 416
+IMAGE_WIDTH_ONNX= 416
+CHANNEL= 3
+
 def detect(save_img=False):
-    imgsz = (608, 608) if ONNX_EXPORT else opt.img_size  # (320, 192) or (416, 256) or (608, 352) for (height, width)
+    imgsz = (IMAGE_WIDTH_ONNX, IMAGE_HEIGHT_ONNX) if ONNX_EXPORT else opt.img_size  # (320, 192) or (416, 256) or (608, 352) for (height, width)
     out, source, weights = opt.output, opt.source, opt.weights    
 
     #webcam = source == '0' or source.startswith('rtsp') or source.startswith('http') or source.endswith('.txt')
@@ -55,7 +59,7 @@ def detect(save_img=False):
         # serve per la quantizzazione unisce BN+Conv2d
         #model.fuse()
         #img = torch.zeros((1, 3) + imgsz)  # (1, 3, 320, 192)
-        img = torch.randn(1, 3, 608, 608, device='cpu')
+        img = torch.randn(1, CHANNEL, IMAGE_WIDTH_ONNX, IMAGE_HEIGHT_ONNX, device='cpu')
         f = opt.weights.replace(opt.weights.split('.')[-1], 'onnx')  # *.onnx filename
         torch.onnx.export(model, img, f, verbose=True, opset_version=11,
                           input_names=['images'], output_names=['classes', 'boxes'])
@@ -81,7 +85,7 @@ if __name__ == '__main__':
     parser.add_argument('--weights', type=str, default='models/yolov3-spp.pt', help='weights path')
     parser.add_argument('--source', type=str, default='data/samples', help='source')  # input file/folder, 0 for webcam
     parser.add_argument('--output', type=str, default='models', help='output folder')  # output folder
-    parser.add_argument('--img-size', type=int, default=608, help='inference size (pixels)')
+    parser.add_argument('--img-size', type=int, default=416, help='inference size (pixels)')
     parser.add_argument('--device', default='', help='device id (i.e. 0 or 0,1) or cpu')
     opt = parser.parse_args()
     opt.cfg = check_file(opt.cfg)  # check file
