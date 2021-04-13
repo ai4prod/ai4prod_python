@@ -7,7 +7,8 @@ from numpy import random
 from math import sqrt
 
 from data import cfg, MEANS, STD
-
+import warnings
+warnings.filterwarnings('ignore')
 
 def intersect(box_a, box_b):
     max_xy = np.minimum(box_a[:, 2:], box_b[2:])
