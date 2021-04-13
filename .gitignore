@@ -4,4 +4,16 @@ classification/models/*
 classification/onnxConversion/models
 object_detection/Yolov3/onnxConversion/models/*
 object_detection/Yolov3/onnxConversion/utils/__pycache__/*
-
+instanceSegmentation/yolact/Dataset
+instanceSegmentation/yolact/logs
+instanceSegmentation/yolact/__pycache__/
+instanceSegmentation/yolact/weights
+instanceSegmentation/yolact/web
+instanceSegmentation/yolact/layers/__pycache__/
+instanceSegmentation/yolact/layers/functions/__pycache__/
+instanceSegmentation/yolact/layers/modules/__pycache__/
+instanceSegmentation/yolact/utils/__pycache__/
+instanceSegmentation/yolact/data/__pycache__/
+instanceSegmentation/coco-annotator/
+instanceSegmentation/Dataset/CustomDataset
+instanceSegmentation/Dataset/src/__pycache__/
