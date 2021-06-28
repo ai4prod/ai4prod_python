@@ -17,3 +17,7 @@ instanceSegmentation/yolact/data/__pycache__/
 instanceSegmentation/coco-annotator/
 instanceSegmentation/Dataset/CustomDataset
 instanceSegmentation/Dataset/src/__pycache__/
+semanticSegmentation/U-2-Net/__pycache__/
+semanticSegmentation/U-2-Net/model/__pycache__/
+semanticSegmentation/U-2-Net/train_data/
+
