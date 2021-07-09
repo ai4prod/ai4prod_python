@@ -25,7 +25,7 @@ class ImagenetTransferLearning(pl.LightningModule):
         self.save_hyperparameters()
         self.num_classes = num_classes
         # init pretrained
-        backbone = torchvision.models.resnet50(pretrained=True)
+        backbone = torchvision.models.resnet18(pretrained=True)
         num_param = backbone.fc.in_features
         layers = list(backbone.children())[:-1]
         self.feature_extractor = torch.nn.Sequential(*layers)

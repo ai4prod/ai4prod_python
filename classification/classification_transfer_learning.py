@@ -12,43 +12,76 @@ import torch.nn.functional as F
 from argparse import ArgumentParser
 from models_lighting import *
 from datamodule_lighting import *
+#remove warning message
+import logging
+logging.getLogger("lightning").setLevel(logging.ERROR)
 
-
-        
 if __name__ == "__main__":
-    
+
     parser = ArgumentParser()
     # automaticaly parse all the things you want
     parser = pl.Trainer.add_argparse_args(parser)
-    parser.add_argument('--batchsize', default = 4)
-    parser.add_argument('--imsize', default=224, 
-                            help='Image size for ONNX conversion and Inference')
-    parser.add_argument('--channels', default=3, 
-                            help='Image channels for ONNX conversion and Inference')                       
+    parser.add_argument('--batchsize', default=4)
+    parser.add_argument('--imsize', default=224,
+                        help='Image size for ONNX conversion and Inference')
+    parser.add_argument('--channels', default=3,
+                        help='Image channels for ONNX conversion and Inference')
     args = parser.parse_args()
-    
+
     model_dir = os.path.join(".", "trained_models")
     if not os.path.exists(model_dir):
         os.makedirs(model_dir)
-    
+
     checkpoint_callback = ModelCheckpoint(
-    monitor='val_loss',
-    dirpath= model_dir,
-    filename='finetuned-resnet',
-    save_top_k=1,
-    mode='min',
+        monitor='val_loss',
+        dirpath=model_dir,
+        filename='finetuned-resnet',
+        save_top_k=1,
+        mode='min',
     )
-    
-    #NEED TO CHANGE WITH YOUR VALUE
-    normalize_data=[0.485,0.456,0.406,0.229,0.224,0.225]
+
+    # ImageNet Transform
+    # normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
+    #                                  std=[0.229, 0.224, 0.225])
+    #
+    # train_transform = transforms.Compose([
+    #     transforms.RandomResizedCrop(224),
+    #     transforms.RandomHorizontalFlip(),
+    #     transforms.ToTensor(),
+    #     normalize
+    #     ])
+
+    # test_transform = transforms.Compose([
+    #     transforms.Resize((256,256)),
+    #     transforms.CenterCrop([224,224]),
+    #     transforms.ToTensor(),
+    #     normalize
+    #     ])
+
+    # CIFAR Transform
+    normalize = transforms.Normalize(
+        (0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))
+
+    train_transform = transforms.Compose([
+        transforms.RandomCrop(32, padding=4),
+        transforms.RandomHorizontalFlip(),
+        transforms.ToTensor(),
+        normalize
+    ])
+
+    test_transform = transforms.Compose([
+        transforms.ToTensor(),
+        normalize
+    ])
 
     # Training
-    #Img_w Img_h batch_size NEED TO CHANGE WITH CUSTOM VALUE
-    dm= ImageFolderTransferLearning("data",img_w=224,img_h=224,normValue=normalize_data,batch_size=8)
-    
-    #NUM_CLASSES NEED TO CHANGE WITH CUSTOM VALUE
-    model = ImagenetTransferLearning(num_classes=2)
-    
-    trainer = pl.Trainer(max_epochs=10, gpus=1, progress_bar_refresh_rate=20, callbacks=[checkpoint_callback])
-    trainer.fit(model=model,datamodule=dm)
-    
+    # Img_w Img_h batch_size NEED TO CHANGE WITH CUSTOM VALUE
+    dm = ImageFolderTransferLearning(
+        "data", batch_size=8, train_transform=train_transform, test_transform=test_transform)
+
+    # NUM_CLASSES NEED TO CHANGE WITH CUSTOM VALUE
+    model = ImagenetTransferLearning(num_classes=10)
+
+    trainer = pl.Trainer(max_epochs=10, gpus=1, progress_bar_refresh_rate=20, callbacks=[
+                         checkpoint_callback])
+    trainer.fit(model=model, datamodule=dm)
