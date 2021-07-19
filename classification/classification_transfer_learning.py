@@ -13,8 +13,8 @@ from argparse import ArgumentParser
 from models_lighting import *
 from datamodule_lighting import *
 #remove warning message
-import logging
-logging.getLogger("lightning").setLevel(logging.ERROR)
+# import logging
+# logging.getLogger("lightning").setLevel(logging.ERROR)
 
 if __name__ == "__main__":
 
@@ -35,7 +35,7 @@ if __name__ == "__main__":
     checkpoint_callback = ModelCheckpoint(
         monitor='val_loss',
         dirpath=model_dir,
-        filename='finetuned-resnet',
+        filename='finetuned-resnet-cifar',
         save_top_k=1,
         mode='min',
     )
@@ -77,11 +77,14 @@ if __name__ == "__main__":
     # Training
     # Img_w Img_h batch_size NEED TO CHANGE WITH CUSTOM VALUE
     dm = ImageFolderTransferLearning(
-        "data", batch_size=8, train_transform=train_transform, test_transform=test_transform)
+        "/media/aistudios/44c62318-a7de-4fb6-a3e2-01aba49489c5/Dataset/cifar-10-python/cifar-10-batches-py", batch_size=128, train_transform=train_transform, test_transform=test_transform)
 
+    # you can change with any model you want
+    model= torchvision.models.resnet18()
+    
     # NUM_CLASSES NEED TO CHANGE WITH CUSTOM VALUE
-    model = ImagenetTransferLearning(num_classes=10)
+    model = ImagenetTransferLearning(num_classes=10,pytorch_model=model,from_scratch=True)
 
-    trainer = pl.Trainer(max_epochs=10, gpus=1, progress_bar_refresh_rate=20, callbacks=[
+    trainer = pl.Trainer(max_epochs=50, gpus=1, progress_bar_refresh_rate=20,precision=16, callbacks=[
                          checkpoint_callback])
     trainer.fit(model=model, datamodule=dm)

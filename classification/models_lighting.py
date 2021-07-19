@@ -15,30 +15,38 @@ import torch.nn.functional as F
 
 class ImagenetTransferLearning(pl.LightningModule):
     """
-    Class to Finetune Resnet50.
-    Resnet50 exploited is the torchvision one
+    Class to Finetune Resnet-{18,50,101,152,...}.
+    Resnet exploited is the torchvision one
     """
 
-    def __init__(self, num_classes):
+    """
+    from_scratch= True if a model is used without pretrained
+    """
+    def __init__(self, num_classes,pytorch_model,from_scratch=False):
         super().__init__()
         # save init parameters in a dictionary. Use by load_from_checkpoint
         self.save_hyperparameters()
         self.num_classes = num_classes
         # init pretrained
-        backbone = torchvision.models.resnet18(pretrained=True)
+        backbone = pytorch_model
         num_param = backbone.fc.in_features
         layers = list(backbone.children())[:-1]
         self.feature_extractor = torch.nn.Sequential(*layers)
         self.finetunelayer = torch.nn.Linear(num_param, self.num_classes)
-        
+        self.from_scratch= from_scratch
          
         
         
     def forward(self, x):
-        self.feature_extractor.eval()
-        with torch.no_grad():
+
+        if(not self.from_scratch):
+            self.feature_extractor.eval()
+            with torch.no_grad():
+                representations = self.feature_extractor(x).flatten(1)
+            x = self.finetunelayer(representations)
+        else:
             representations = self.feature_extractor(x).flatten(1)
-        x = self.finetunelayer(representations)
+            x = self.finetunelayer(representations)
         return x
     
     def configure_optimizers(self):
